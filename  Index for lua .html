@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lua Key System</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="app">
+    <header>
+      <div class="logo">
+        <div class="logo-icon">L</div>
+        <div>
+          <h1>Lua Key System</h1>
+          <p class="subtitle">Self-hosted • Keys • HWID Lock • Loaders</p>
+        </div>
+      </div>
+      <div class="status" id="statusBadge">Connecting…</div>
+    </header>
+
+    <nav class="tabs">
+      <button class="tab active" data-tab="scripts">Scripts</button>
+      <button class="tab" data-tab="keys">Keys & HWID</button>
+      <button class="tab" data-tab="howto">How to Use</button>
+    </nav>
+
+    <main>
+      <!-- SCRIPTS -->
+      <section id="scripts" class="panel active">
+        <div class="card">
+          <div class="card-header">
+            <h2>Scripts</h2>
+            <button class="btn primary" id="showAddScript">+ New Script</button>
+          </div>
+
+          <div id="addScriptForm" class="form-box hidden">
+            <label>Script Name
+              <input type="text" id="scriptName" placeholder="My Hub" />
+            </label>
+            <label>Type
+              <select id="scriptType">
+                <option value="protected">Protected (Key + HWID)</option>
+                <option value="public">Public (anyone can run)</option>
+              </select>
+            </label>
+            <label>Lua Source (paste full code or leave empty and use URL later)
+              <textarea id="scriptSource" rows="8" placeholder="-- your script here"></textarea>
+            </label>
+            <div class="form-actions">
+              <button class="btn primary" id="saveScriptBtn">Save Script</button>
+              <button class="btn" id="cancelScriptBtn">Cancel</button>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Type</th>
+                  <th>Created</th>
+                  <th>Loader</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="scriptsBody"></tbody>
+            </table>
+            <p class="empty" id="scriptsEmpty">No scripts yet. Create one to get started.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- KEYS -->
+      <section id="keys" class="panel">
+        <div class="card">
+          <div class="card-header">
+            <h2>Keys & HWID</h2>
+            <button class="btn primary" id="showAddKey">+ Generate Key</button>
+          </div>
+
+          <div id="addKeyForm" class="form-box hidden">
+            <label>Name / Note
+              <input type="text" id="keyName" placeholder="Customer or script name" />
+            </label>
+            <label>Key Prefix
+              <input type="text" id="keyPrefix" value="KEY" maxlength="8" />
+            </label>
+            <label>Link to Script (optional)
+              <select id="keyScriptId">
+                <option value="">— none —</option>
+              </select>
+            </label>
+            <div class="form-actions">
+              <button class="btn primary" id="createKeyBtn">Create Key</button>
+              <button class="btn" id="cancelKeyBtn">Cancel</button>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Key</th>
+                  <th>Name</th>
+                  <th>HWID</th>
+                  <th>Uses</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="keysBody"></tbody>
+            </table>
+            <p class="empty" id="keysEmpty">No keys yet.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- HOW TO -->
+      <section id="howto" class="panel">
+        <div class="card">
+          <h2>How to Use</h2>
+          <div class="howto">
+            <h3>1. Start the server</h3>
+            <pre><code>cd lua-key-system
+npm install
+npm start</code></pre>
+            <p>Then open <code>http://localhost:3000</code></p>
+
+            <h3>2. Create a Script</h3>
+            <ul>
+              <li>Go to <strong>Scripts</strong> → New Script</li>
+              <li>Choose <strong>Protected</strong> (needs key + HWID) or <strong>Public</strong></li>
+              <li>Paste your full Lua code and save</li>
+            </ul>
+
+            <h3>3. Create a Key (for protected scripts)</h3>
+            <ul>
+              <li>Go to <strong>Keys & HWID</strong> → Generate Key</li>
+              <li>Copy the key and give it to the user</li>
+            </ul>
+
+            <h3>4. Give the user the loader</h3>
+            <p>For a <strong>protected</strong> script the user runs:</p>
+            <pre><code>_G.script_key = "KEY-XXXX-XXXX-XXXX"
+loadstring(game:HttpGet("http://YOUR_IP:3000/loader/protected/SCRIPT_ID"))()</code></pre>
+
+            <p>For a <strong>public</strong> script:</p>
+            <pre><code>loadstring(game:HttpGet("http://YOUR_IP:3000/loader/public/SCRIPT_ID"))()</code></pre>
+
+            <h3>5. Reset HWID</h3>
+            <ul>
+              <li>In the Keys table click <strong>Reset HWID</strong></li>
+              <li>The next device that uses that key will bind to it</li>
+            </ul>
+
+            <h3>Notes</h3>
+            <ul>
+              <li>Replace <code>YOUR_IP</code> with your public IP or domain if hosting online.</li>
+              <li>Data is stored in <code>data/keys.json</code> and <code>data/scripts/</code></li>
+              <li>This is a real server-side HWID lock – the check happens on your server.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>Lua Key System • Self-hosted</footer>
+  </div>
+
+  <!-- Modal for showing loader -->
+  <div class="modal hidden" id="loaderModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="modalTitle">Loader</h3>
+        <button class="btn small" id="closeModal">Close</button>
+      </div>
+      <pre><code id="modalCode"></code></pre>
+      <button class="btn primary" id="copyModalBtn">Copy Loader</button>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,16 @@
+{
+  "name": "lua-key-system",
+  "version": "1.0.0",
+  "description": "Self-hosted Lua Loader + Key + HWID system",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.21.0",
+    "cors": "^2.8.5",
+    "uuid": "^10.0.0",
+    "body-parser": "^1.20.3"
+  }
+}
